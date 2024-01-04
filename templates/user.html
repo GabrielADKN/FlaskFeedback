@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Username</th>
+            <td>{{user.username}}</td>
+        </tr>
+        <tr>
+            <th scope="row">Email</th>
+            <td>{{user.email}}</td>
+        </tr>
+        <tr>
+            <th scope="row">First name</th>
+            <td>{{user.first_name}}</td>
+        </tr>
+        <tr>
+            <th scope="row">Last name</th>
+            <td>{{user.last_name}}</td>
+        </tr>
+        <tr>
+            <th scope="row">Delete user</th>
+            <td>
+                <form style="display:inline;" action="/users/{{user.username}}/delete" method="POST">
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+
+</table>
+
+<form method="POST" action="/users/{{user.username}}/feedback/add">
+
+    {{ form.hidden_tag() }}
+
+    {% for field in form
+    if field.widget.input_type != 'hidden' %}
+    <p>
+        {{ field.label }}
+        {{ field(class_="form-control") }}
+
+        {% for error in field.errors %}
+        <span class="form-text text-danger">{{ error }}</span>
+        {% endfor %}
+    </p>
+    {% endfor %}
+
+    <button class="btn btn-success" type="submit">Add feedback</button>
+</form>
+
+<div>
+    {% for feedback in user.feedback %}
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title text-info">
+                <a href="/feedback/{{feedback.id}}/update">{{feedback.title}}</a>
+                {% if session['username'] == user.username %}
+                <form style="display:inline;" action="/feedback/{{feedback.id}}/delete" method="POST">
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </form>
+                {% endif %}
+            </h5>
+            <!-- <h6 class="card-subtitle mb-2 text-muted">{{feedback.content}}</h6> -->
+            <p class="card-text">
+                {{feedback.content}}
+            </p>
+
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+
+{% endblock %}
